@@ -1,38 +1,78 @@
-# Avaliação Front-End JR N1 #
+# Example app with styled-components
 
-Leia atentamente até o final.
+This example features how you use a different styling solution than [styled-jsx](https://github.com/zeit/styled-jsx) that also supports universal styles. That means we can serve the required styles for the first render within the HTML and then load the rest in the client. In this case we are using [styled-components](https://github.com/styled-components/styled-components).
 
-Nossa avaliação tem como foco analisar como o candidato no desevolvimento do front-end da página proposta.
-Avaliamos qualidade de código, versionamento, uso de automatizadores, uso de preprocessadores e javascript(vanilla, jquery ou react).
+For this purpose we are extending the `<Document />` and injecting the server side rendered styles into the `<head>`, and also adding the `babel-plugin-styled-components` (which is required for server side rendering). Additionally we set up a global [theme](https://www.styled-components.com/docs/advanced#theming) for styled-components using NextJS custom [`<App>`](https://nextjs.org/docs/advanced-features/custom-app) component.
 
-*OBS.: Evite bootstrap e outros similares, pois queremos avaliar o seu código na implementação dos itens.*
+## Deploy your own
 
-Link do layout a ser desenvolvido: https://www.figma.com/file/Jgjk8tdDaQ4nHFHgQuNTLL/Avalia%C3%A7%C3%A3o-Front-end-JR.?node-id=0%3A1
+Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
 
-### 01 - O Básico a ser executado para concorrer a vaga ###
-* Fork o repositório e inicie o desevolvimento;
-* Atenção para responsividade. 
-Note que no repositório existe uma pasta src com alguns assets(Caso necessário, pois já tem tudo no figma). A fonte usada no layout é "Roboto", uma fonte google.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel/next.js/tree/canary/examples/with-styled-components&project-name=with-styled-components&repository-name=with-styled-components)
 
-Finalizando esses itens você terá terminado a etapa 01 da avaliação.
+## How to use
 
-*OBS.: Interações e funcionalidades não sugeridas no layout serão levadas em consideração. Atenção aos detalhes do layout.*
+Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
 
-### 02 - Elementos de interação ###
-* O banner prinicipal é do tipo slider e possui uma navegação na direita, no crop de desktop, e abaixo do banner, no crop de mobile. Precisamos que ao navegar o nome e a páginação nessa área sejam atualizados. *OBS.: Você não precisa fazer o slider do zero. Utilize plugins como Slick, Owl carousel ou qualquer outro para fazer esse item do projeto*.
+```bash
+npx create-next-app --example with-styled-components with-styled-components-app
+# or
+yarn create next-app --example with-styled-components with-styled-components-app
+```
 
-* Menu. Sempre que clicarmos/ou no hover no ícone de menu hamburguer precisamos exibir o menu.
+Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
 
-* Quando usuário clicar no botão de comprar na prateleira precisamos que exiba o lightbox de produto adicionado e o botão de compra deve ficar sinalizado como item comprado.
+### Try it on CodeSandbox
 
-* **PLUS:** Junto com a ação de exibição do lightbox atualize a quantidade de itens na sacola presente na direita header.
+[Open this example on CodeSandbox](https://codesandbox.io/s/github/vercel/next.js/tree/canary/examples/with-styled-components)
 
-Finalizando esses itens você terá terminado a etapa 02 da avaliação.
+### Notes
 
-### EXTRA ###
-* Se você chegou até aqui você já é bem top! Essa etapa é um extra, e um diferencial para quem quiser se descatar. Note que no header existe elementos sem interação. Como contato e busca. Desenvolva uma solução para um desses elementos.
+When wrapping a [Link](https://nextjs.org/docs/api-reference/next/link) from `next/link` within a styled-component, the [as](https://styled-components.com/docs/api#as-polymorphic-prop) prop provided by `styled` will collide with the Link's `as` prop and cause styled-components to throw an `Invalid tag` error. To avoid this, you can either use the recommended [forwardedAs](https://styled-components.com/docs/api#forwardedas-prop) prop from styled-components or use a different named prop to pass to a `styled` Link.
 
+<details>
+<summary>Click to expand workaround example</summary>
+<br />
 
-*OBS. 01: O candidato esta livre para trabalhar com a estrutura e tecnologia que preferir, exceto bootstrap e similares.*
+**components/StyledLink.js**
 
-*OBS. 02: Finalizando a prova envie o link do fork para o e-mail: rafael.augusto@agencian1.com.br.*
+```javascript
+import Link from 'next/link'
+import styled from 'styled-components'
+
+const StyledLink = ({ as, children, className, href }) => (
+  <Link href={href} as={as} passHref>
+    <a className={className}>{children}</a>
+  </Link>
+)
+
+export default styled(StyledLink)`
+  color: #0075e0;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    color: #40a9ff;
+  }
+
+  &:focus {
+    color: #40a9ff;
+    outline: none;
+    border: 0;
+  }
+`
+```
+
+**pages/index.js**
+
+```javascript
+import StyledLink from '../components/StyledLink'
+
+export default () => (
+  <StyledLink href="/post/[pid]" forwardedAs="/post/abc">
+    First post
+  </StyledLink>
+)
+```
+
+</details>
